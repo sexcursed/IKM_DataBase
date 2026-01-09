@@ -2,7 +2,7 @@
 
 Database::Database(): nextId(1) {};
 
-void Database::addRecord(Record& record){
+void Database::addRecord(Record record){
   Record newRecord = record;
   newRecord.id = nextId++;
   db.push_back(newRecord);
@@ -75,7 +75,7 @@ std::vector <Record> Database::search(SearchField field, std::string value){
 void Database::sort(SortField field){
   switch(field){
     case SORT_BY_ID:{
-      std::sort(db.begin(),db.end(),[](Record a, Record b){return a.id < b.id;});
+      std::sort(db.begin(),db.end(),[](Record a, Record b){return a.id < b.id;}); //здесь везде используются лямбда функции, т.к. нигде больше эти компараторы не пригодятся
       break;
     }
     case SORT_BY_NAME:{
@@ -98,7 +98,6 @@ bool Database::saveToFile(std::string& filename){
   std::ofstream file(filename);
   
   if (!file.is_open()) {
-    std::cerr << "Ошибка открытия файла для записи.\n";
     return false;
   }
   
@@ -107,13 +106,12 @@ bool Database::saveToFile(std::string& filename){
   }
   
   file.close();
-  std::cout << "Данные сохранены в файл: " << filename << "\n";
   return true;
 }
 
 bool Database::loadFromFile(std::string& filename) {
   std::ifstream file(filename);
-  
+  int lineNumber = 0;
   if (!file.is_open()) {
     std::cerr << "Ошибка открытия файла для чтения.\n";
     return false;
@@ -124,29 +122,61 @@ bool Database::loadFromFile(std::string& filename) {
   
   std::string line;
   while (std::getline(file, line)) {
+    lineNumber++;
     if (line.empty()) continue;
     
     std::stringstream ss(line);
     std::string temp;
     Record record;
     
-    std::getline(ss, temp, ',');
-    record.id = std::stoi(temp);
-    std::getline(ss, record.name, ',');
-    std::getline(ss, temp, ',');
-    record.age = std::stoi(temp);
-    std::getline(ss, temp, ',');
-    record.salary = std::stod(temp);
+    if (!std::getline(ss, temp, ',')) {
+        std::cerr << "Ошибка: нет ID в строке " << lineNumber << std::endl;
+        continue;
+    }
+    
+    try {
+        record.id = std::stoi(temp);
+    } catch (...) {
+        std::cerr << "Ошибка: ID не число в строке " << lineNumber << std::endl;
+        continue;
+    }
+    
+    if (!std::getline(ss, record.name, ',')) {
+        std::cerr << "Ошибка: нет имени в строке " << lineNumber << std::endl;
+        continue;
+    }
+    
+    if (!std::getline(ss, temp, ',')) {
+        std::cerr << "Ошибка: нет возраста в строке " << lineNumber << std::endl;
+        continue;
+    }
+    
+    try {
+        record.age = std::stoi(temp);
+    } catch (...) {
+        std::cerr << "Ошибка: возраст не число в строке " << lineNumber << std::endl;
+        continue;
+    }
+    
+    if (!std::getline(ss, temp, ',')) {
+        std::cerr << "Ошибка: нет зарплаты в строке " << lineNumber << std::endl;
+        continue;
+    }
+    
+    try {
+        record.salary = std::stoi(temp);
+    } catch (...) {
+        std::cerr << "Ошибка: зарплата не число в строке " << lineNumber << std::endl;
+        continue;
+    }
+    
     db.push_back(record);
-
+    
     if (record.id >= nextId) {
         nextId = record.id + 1;
     }
   }
-  
   file.close();
-  std::cout << "Данные загружены из файла: " << filename << "\n";
-
   return true;
 }
 
@@ -157,5 +187,4 @@ size_t Database::getRecordCount(){
 void Database::clear(){
   db.clear();
   nextId = 1;
-  std::cout << "База данных очищена.\n";
 }

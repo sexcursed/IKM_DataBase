@@ -20,7 +20,7 @@ class Database{
   public:
     Database();
 
-    void addRecord(Record& record);
+    void addRecord(Record record);
     void viewDb();
     bool deleteRecord(int id);
 
