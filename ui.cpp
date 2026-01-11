@@ -10,7 +10,7 @@ void displayMenu(){
   std::cout << "6.  Сохранить данные в файл\n";
   std::cout << "7.  Загрузить данные из файла\n";
   std::cout << "8.  Очистить базу данных\n";
-  std::cout << "9. Выход из программы\n";
+  std::cout << "9.  Выход из программы\n";
   std::cout << "----------------------------------\n";
   std::cout << "Выберите действие: ";
 }
@@ -50,7 +50,7 @@ void addRecordHandler(Database& db){
   }
 
   while(true){
-    std::cout << "Введите запрплату нового пользователя: ";
+    std::cout << "Введите зарплату нового пользователя: ";
     std::cin >> salary;
 
     if(std::cin.fail() or salary < 0){
@@ -125,7 +125,7 @@ void searchRecordsHandler(Database& db){
   }
 
   std::cout << "Найдено " << result.size() << " записей.\n";
-  std::cout << std::left << std::setw(5) << "ID" << std::setw(20) << "ИМЯ" << std::setw(10) << "ВОЗРАСТ" << std::setw(15) << "ЗАРПЛАТА" << "\n" << std::string(50,'-') << "\n";
+  std::cout << std::left << std::setw(5) << "ID" << std::setw(18) << "ИМЯ" << std::setw(22) << "ВОЗРАСТ" << std::setw(15) << "ЗАРПЛАТА" << "\n" << std::string(50,'-') << "\n";
   for(auto record : result){
     record.display();
   }
@@ -186,7 +186,7 @@ void saveToFileHandler(Database& db){
   std::getline(std::cin, filename);
 
   if(filename.empty()){
-    filename = "database.txt";
+    filename = "savetest.txt";
   }
   if(db.saveToFile(filename)){
     std::cout << "Данные сохранены в файл: " << filename << "\n";
@@ -280,8 +280,15 @@ void inputHandler(int choice, Database& db, bool& status){
     break;
   }
   case 9:{
-    std::cout << "Завершение работы программы.\n";
-    status = false;
+    char confirm;
+    std::cout << "Вы увереный что хотите выйти из программы?(y/n)\n";
+    std::cin >> confirm;
+    if(confirm == 'y' or confirm == 'Y')
+    {
+      std::cout << "Завершение работы программы.\n";
+      status = false;
+      break;
+    }
     break;
   }
   default:{

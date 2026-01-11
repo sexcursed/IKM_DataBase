@@ -14,7 +14,7 @@ void Database::viewDb(){
     std::cout << "База данных пуста" << "\n";
     return;
   }
-  std::cout << std::left << std::setw(5) << "ID" << std::setw(20) << "ИМЯ" << std::setw(10) << "ВОЗРАСТ" << std::setw(15) << "ЗАРПЛАТА" << "\n" << std::string(50,'-') << "\n";
+  std::cout << std::left << std::setw(5) << "ID" << std::setw(18) << "ИМЯ" << std::setw(22) << "ВОЗРАСТ" << std::setw(15) << "ЗАРПЛАТА" << "\n" << std::string(50,'-') << "\n";
   for(auto record : db){
     record.display();
   }
@@ -79,7 +79,7 @@ void Database::sort(SortField field){
       break;
     }
     case SORT_BY_NAME:{
-      std::sort(db.begin(),db.end(),[](Record a, Record b){return a.id < b.id;});
+      std::sort(db.begin(),db.end(),[](Record a, Record b){return a.name < b.name;});
       break;
     }
     case SORT_BY_AGE:{
